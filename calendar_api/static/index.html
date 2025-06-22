@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Календар подій</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; }
+    label, input, textarea, button { display: block; width: 100%; margin-bottom: 10px; }
+    ul { padding-left: 0; list-style: none; }
+    li { background: #eee; margin-bottom: 5px; padding: 10px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Мій Календар</h1>
+
+  <form id="eventForm">
+    <label>Назва події
+      <input type="text" id="title" required />
+    </label>
+    <label>Опис
+      <textarea id="description"></textarea>
+    </label>
+    <label>Дата початку
+      <input type="datetime-local" id="startDate" required />
+    </label>
+    <label>Дата завершення
+      <input type="datetime-local" id="endDate" required />
+    </label>
+    <button type="submit">Додати подію</button>
+  </form>
+
+  <h2>Список подій</h2>
+  <ul id="eventsList"></ul>
+
+  <script>
+    const apiUrl = 'http://localhost:8000/events';
+
+    async function fetchEvents() {
+      const res = await fetch(apiUrl);
+      const events = await res.json();
+      const list = document.getElementById('eventsList');
+      list.innerHTML = '';
+      events.forEach(ev => {
+        const li = document.createElement('li');
+        li.textContent = `${ev.title} (${new Date(ev.start).toLocaleString()} — ${new Date(ev.end).toLocaleString()})`;
+        list.appendChild(li);
+      });
+    }
+
+    document.getElementById('eventForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const newEvent = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        start: document.getElementById('startDate').value,
+        end: document.getElementById('endDate').value
+      };
+
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newEvent)
+      });
+
+      if (res.ok) {
+        alert('Подію додано!');
+        e.target.reset();
+        fetchEvents();
+      } else {
+        alert('Помилка при додаванні події');
+      }
+    });
+
+    fetchEvents();
+  </script>
+</body>
+</html>

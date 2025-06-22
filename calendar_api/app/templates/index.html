@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Пошук вільних слотів</title>
+</head>
+<body>
+    <h1>Знайти спільний вільний слот</h1>
+    <form method="post" action="/find-slots">
+        <label>Учасники (ID через кому):</label><br>
+        <input type="text" name="participants" value="1,2"><br><br>
+
+        <label>Тривалість (хв):</label><br>
+        <input type="number" name="duration" value="60"><br><br>
+
+        <label>Шукати днів вперед:</label><br>
+        <input type="number" name="days" value="1"><br><br>
+
+        <button type="submit">Пошук</button>
+    </form>
+
+    {% if slots %}
+        <h2>Найближчі слоти:</h2>
+        <ul>
+            {% for slot in slots %}
+                <li>{{ slot[0] }} — {{ slot[1] }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>
